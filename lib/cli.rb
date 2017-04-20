@@ -1,5 +1,4 @@
 class Cli 
-  DEFAULT_INPUT = File.join("/Users/SophieDeBenedetto/Desktop/chocolates-r-us", "orders/input.csv")
   
   def self.run
     welcome
@@ -36,8 +35,10 @@ class Cli
       help
     when "exit"
       exit
-    else
+    when "default"
       process_orders
+    else
+      process_orders(input)
     end
   end
 
@@ -46,8 +47,16 @@ class Cli
     "exit"
   end
 
-  def self.process_orders(orders_csv=DEFAULT_INPUT)
+  def self.process_orders(orders_csv=nil)
     puts "processing orders..."
-    OrderProcessor.process(orders_csv)
+    if orders_csv && !File.exists?(orders_csv)
+      puts "File #{orders_csv} not found"
+    else
+      OrderProcessor.process(orders_csv)
+    end
+  end
+
+  def file_not_found
+    puts "File #{orders_csv} not found"
   end
 end

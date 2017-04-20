@@ -2,7 +2,6 @@ class RedemptionCalculator
   REEDEMABLE_MAP = {
       "milk" => "sugar free",
       "sugar free" => "dark",
-      "dark" => "dark",
       "white" => "sugar free"
     }
 
@@ -10,45 +9,58 @@ class RedemptionCalculator
     new(order).build_totals
   end
 
-  attr_reader :original_result, :order
+  attr_reader :starting_chocolates, :order
 
   def initialize(order)
     @order = order
-    @original_result = {"milk" => 0, "dark" => 0, "white" => 0, "sugar free" => 0}
+    @starting_chocolates = {"milk" => 0, "dark" => 0, "white" => 0, "sugar free" => 0}
   end
 
 
   def build_totals
-    original_result.merge(calculate_all_totals)
+    starting_chocolates.merge(calculate_totals)
   end
 
-  def calculate_all_totals(result=nil)
-    result = calculate_total unless result
-    return result if result.values.last < order.wrappers_needed
-
-    current_type       = result.keys.last
-    current_type_total = result[current_type]
-    new_result         = result.merge(calculate_total(current_type, current_type_total)) 
-    calculate_all_totals(new_result)
-  end
-
-  def calculate_total(type=order.type, total=nil, freebies=0, wrappers_left=nil)
-    total         = order.cash / order.price if !total
-    wrappers_left = total if !wrappers_left
-    return construct_result(type, total, freebies) if wrappers_left < order.wrappers_needed
+  def calculate_totals(type=order.type, total=nil, related_total=0, wrappers=nil)
+    related_type      = associated[type]
+    total             = calculate_total unless total
+    wrappers          = total unless wrappers
     
-    add_to_type   = wrappers_left / order.wrappers_needed
-    wrappers_left = (total % order.wrappers_needed) + add_to_type
-    total         += add_to_type
-    freebies      += add_to_type if type != associated[type]
-    calculate_total(type, total, freebies, wrappers_left)
+    free              = wrappers / order.wrappers_needed
+    leftover_wrappers = wrappers % order.wrappers_needed
+    wrappers          = free + leftover_wrappers
+    
+    total         += free
+    related_total += free if related_type
+    
+    result = construct_result(type, total, related_type, related_total)
+
+    if redeemable?(wrappers)
+      result.merge(calculate_totals(type, total, related_total, wrappers))
+    elsif related_redeemable?(wrappers, related_type)
+      result.merge(calculate_totals(related_type, related_total))
+    else
+      result
+    end
   end
 
-  def construct_result(type, total, freebies)
-    if type == associated[type]
-      {"#{type}" => total}
+  def redeemable?(wrappers)
+    wrappers >= order.wrappers_needed
+  end
+
+  def related_redeemable?(wrappers, related_type)
+    wrappers < order.wrappers_needed && related_type
+  end
+
+  def calculate_total
+    order.cash / order.price
+  end
+
+  def construct_result(type, total, related_type, related_total)
+    if related_type
+      {type => total, related_type => related_total}
     else
-      {"#{type}" => total, "#{associated[type]}" => freebies}
+      {type => total}
     end
   end
 
