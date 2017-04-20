@@ -1,0 +1,24 @@
+milk N,dark N,white N,sugar free N
+7,0,0,1
+milk N,dark N,white N,sugar free N
+7,0,0,1
+0,3,0,0
+
+0,1,0,4
+0,0,4,1
+
+
+cash, price, wrappers needed, type
+
+12, 2, 5, 'milk'
+12, 4, 4, 'dark'
+
+6, 2, 2, 'sugar free'
+6, 2, 2, 'white'
+
+
+    milk 7, dark 0, white 0, sugar free 1
+    milk 0, dark 3, white 0, sugar free 0
+    
+    milk 0, dark 3, white 0, sugar free 5
+    milk 0, dark 1, white 5, sugar free 3
