@@ -1,10 +1,4 @@
 class RedemptionCalculator
-  REEDEMABLE_MAP = {
-      "milk" => "sugar free",
-      "sugar free" => "dark",
-      "white" => "sugar free"
-    }
-
   def self.calculate(order)
     new(order).build_totals
   end
@@ -13,7 +7,9 @@ class RedemptionCalculator
 
   def initialize(order)
     @order = order
-    @starting_chocolates = {"milk" => 0, "dark" => 0, "white" => 0, "sugar free" => 0}
+    @starting_chocolates = CHOCOLATES.each_with_object({}) do |chocolate, map| 
+      map[chocolate] = 0
+    end
   end
 
 
@@ -22,7 +18,7 @@ class RedemptionCalculator
   end
 
   def calculate_totals(type=order.type, total=nil, related_total=0, wrappers=nil)
-    related_type      = associated[type]
+    related_type      = REDEEMABLE_MAP[type]
     total             = calculate_total unless total
     wrappers          = total unless wrappers
     
@@ -62,9 +58,5 @@ class RedemptionCalculator
     else
       {type => total}
     end
-  end
-
-  def associated
-    self.class::REEDEMABLE_MAP
   end
 end

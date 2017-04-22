@@ -14,9 +14,12 @@ class Cli
   end
 
   def self.welcome
-    puts "Welcome to Chocolates 'R Us!\n"
-    puts "a great and totally real chocolate emporium.\n"
-    puts "just like Willy Wonka's place except for all of the terrifying near-death experiences!\n"
+    puts "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+    puts "Welcome to Chocolates 'R Us!                                                            ".white.on_blue
+    puts "A great and totally real chocolate emporium.                                            ".white.on_blue
+    puts "Just like Willy Wonka's place except for all of the terrifying near-death experiences!  ".white.on_blue
+    puts "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+
   end
 
   def self.help
@@ -43,12 +46,12 @@ class Cli
   end
 
   def self.exit
-    puts "Goodbye!"
+    puts "Goodbye!".red
     "exit"
   end
 
   def self.process_orders(orders_csv=nil)
-    puts "processing orders..."
+    puts "processing orders...".green
     if orders_csv && !File.exists?(orders_csv)
       puts "File #{orders_csv} not found"
     else
