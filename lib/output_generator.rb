@@ -1,9 +1,6 @@
-class OutputGenerator
-  OUTPUT_DIR     = "/Users/SophieDeBenedetto/Desktop/chocolates-r-us/output/" 
-  DEFAULT_OUTPUT = "output.csv"
-  
+class OutputGenerator  
   def self.generate(result, line, output_file)
-    filename = output_file ? format_output_filename(output_file) : OUTPUT_DIR + DEFAULT_OUTPUT
+    filename = format_output_filename(output_file)
     puts "writing output to file #{filename}...".green
     line == 1 ? write_row_with_headers(filename, result) : write_row(filename, result)
   end
@@ -18,7 +15,7 @@ class OutputGenerator
   end
 
   def self.format_output_filename(output_file)
-    OUTPUT_DIR + output_file.split("/").last.gsub('input', 'output')
+    OUTPUT_DIR + output_file.split("/").last
   end
 
   def self.write_row(output_file, result)

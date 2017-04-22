@@ -51,11 +51,13 @@ class Cli
   end
 
   def self.process_orders(orders_csv=nil)
-    puts "processing orders...".green
-    if orders_csv && !File.exists?(orders_csv)
-      puts "File #{orders_csv} not found"
+    processor = orders_csv ? OrderProcessor.process(orders_csv) : OrderProcessor.process
+    if processor.success
+      puts "Done!".green
     else
-      OrderProcessor.process(orders_csv)
+      processor.errors.each do |type, message| 
+        puts "#{type}: #{message}".red
+      end
     end
   end
 

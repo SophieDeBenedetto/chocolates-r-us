@@ -1,0 +1,4 @@
+development:
+  output_dir: "/Users/SophieDeBenedetto/Desktop/chocolates-r-us/output/"
+test:
+  output_dir: "/Users/SophieDeBenedetto/Desktop/chocolates-r-us/spec/fixtures/output/"
