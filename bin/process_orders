@@ -7,5 +7,5 @@ require_relative "../config/environment.rb"
 Cli.run
 
 # To run wihtout bells and whisltes, 
-# comment out the above line, and uncomment the following line:
+#   comment out the above line, and uncomment the following line:
 # ARGV.empty? ? OrderProcessor.process : OrderProcessor.process(ARGV[0])
