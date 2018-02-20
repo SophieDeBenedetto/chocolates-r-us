@@ -1,4 +1,4 @@
 development:
-  output_dir: "/Users/SophieDeBenedetto/Desktop/chocolates-r-us/output/"
+  output_dir: "/output/"
 test:
-  output_dir: "/Users/SophieDeBenedetto/Desktop/chocolates-r-us/spec/fixtures/output/"
+  output_dir: "/spec/fixtures/output/"

@@ -1,62 +1,49 @@
 class RedemptionCalculator
+  REDEEMABLE_MAP = {
+    "milk" => ["milk", "sugar free"],
+    "white" => ["white", "sugar free"],
+    "sugar free" => ["sugar free", "dark"],
+    "dark" => ["dark"]
+  }
+
+  CHOCOLATES = ["milk", "dark", "white", "sugar free"]
+
   def self.calculate(order)
-    new(order).build_totals
+    new(order).calculate_redemption
   end
 
-  attr_reader :starting_chocolates, :order
+  attr_reader :chocolates, :order
 
   def initialize(order)
-    @order = order
-    @starting_chocolates = CHOCOLATES.each_with_object({}) do |chocolate, map| 
+    @order      = order
+    @chocolates = CHOCOLATES.each_with_object({}) do |chocolate, map|
       map[chocolate] = 0
     end
   end
 
-
-  def build_totals
-    starting_chocolates.merge(calculate_totals)
-  end
-
-  def calculate_totals(type=order.type, total=nil, related_total=0, wrappers=nil)
-    related_type      = REDEEMABLE_MAP[type]
-    total             = calculate_total unless total
-    wrappers          = total unless wrappers
-    
-    free              = wrappers / order.wrappers_needed
-    leftover_wrappers = wrappers % order.wrappers_needed
-    wrappers          = free + leftover_wrappers
-    
-    total         += free
-    related_total += free if related_type
-    
-    result = construct_result(type, total, related_type, related_total)
-
-    if redeemable?(wrappers)
-      result.merge(calculate_totals(type, total, related_total, wrappers))
-    elsif related_redeemable?(wrappers, related_type)
-      result.merge(calculate_totals(related_type, related_total))
-    else
-      result
+  def calculate_redemption(num_pieces_purchased=(order.cash / order.price), type=order.type)
+    @chocolates[type] += num_pieces_purchased
+    if num_pieces_purchased > order.wrappers_needed
+      num_redeemed = num_pieces_purchased / order.wrappers_needed
+      apply_redemption(type, num_redeemed)
+      num_pieces_purchased = @chocolates[order.type] - order.wrappers_needed
+      if (num_pieces_purchased / order.wrappers_needed) > 0
+        apply_redemption(type, num_pieces_purchased / order.wrappers_needed)
+      end
+        REDEEMABLE_MAP[type].each do |related_type|
+        if related_type != order.type && @chocolates[related_type] >= order.wrappers_needed
+          apply_redemption(related_type, @chocolates[related_type] / order.wrappers_needed)
+        end
+      end
     end
+    @chocolates
   end
 
-  def redeemable?(wrappers)
-    wrappers >= order.wrappers_needed
-  end
-
-  def related_redeemable?(wrappers, related_type)
-    wrappers < order.wrappers_needed && related_type
-  end
-
-  def calculate_total
-    order.cash / order.price
-  end
-
-  def construct_result(type, total, related_type, related_total)
-    if related_type
-      {type => total, related_type => related_total}
-    else
-      {type => total}
+  def apply_redemption(type, num_redeemed)
+    num_redeemed.times do
+      REDEEMABLE_MAP[type].each do |related_type|
+        @chocolates[related_type] += 1
+      end
     end
   end
 end

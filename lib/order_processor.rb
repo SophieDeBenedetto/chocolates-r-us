@@ -21,6 +21,6 @@ class OrderProcessor
     end
     @success = true
   rescue Errno::ENOENT
-    errors[:file_not_found] = "File #{@csv_file} not found" 
+    errors[:file_not_found] = "File #{@csv_file} not found"
   end
 end

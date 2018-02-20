@@ -1,4 +1,4 @@
 development:
-  input_dir: "/Users/SophieDeBenedetto/Desktop/chocolates-r-us/input/"
+  input_dir: "/input/"
 test:
-  input_dir: "/Users/SophieDeBenedetto/Desktop/chocolates-r-us/spec/fixtures/input/"
+  input_dir: "/spec/fixtures/input/"
