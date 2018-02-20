@@ -10,6 +10,8 @@ input_path  = YAML::load(File.read(File.join(__dir__, 'input_dir.yml')))[ENV["ch
 output_path = YAML::load(File.read(File.join(__dir__, 'output_dir.yml')))[ENV["chocolates_r_us_environment"]]["output_dir"]
 INPUT_DIR      = File.join(File.expand_path("./"), "#{input_path}")
 OUTPUT_DIR     = File.join(File.expand_path("./"), "#{output_path}")
+CHOCOLATES     = YAML::load(File.read(File.join(__dir__, 'chocolates.yml')))
+REDEEMABLE_MAP = YAML::load(File.read(File.join(__dir__, 'redemptions.yml')))
 
 Dir["./lib/*.rb"].each {|file| require file }
 

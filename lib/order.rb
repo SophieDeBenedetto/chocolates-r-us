@@ -1,6 +1,13 @@
+require_relative "./concerns/order_validator"
+
 class Order
+  include OrderValidator
   INTEGER_ATTRIBUTES = ["cash", "price", "wrappers_needed"]
-  attr_accessor :cash, :price, :wrappers_needed, :type
+  attr_accessor :cash, :price, :wrappers_needed, :type, :errors
+
+  def self.create(attributes)
+    new(attributes).tap(&:validate)
+  end
 
   def initialize(attributes)
     attributes.each do |attr, value|
@@ -12,5 +19,8 @@ class Order
       end
       send("#{attribute}=", value)
     end
+    set_initial_errors
   end
+
+  class OrderValidationError < StandardError;end
 end

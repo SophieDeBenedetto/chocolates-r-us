@@ -1,13 +1,4 @@
 class RedemptionCalculator
-  REDEEMABLE_MAP = {
-    "milk" => ["milk", "sugar free"],
-    "white" => ["white", "sugar free"],
-    "sugar free" => ["sugar free", "dark"],
-    "dark" => ["dark"]
-  }
-
-  CHOCOLATES = ["milk", "dark", "white", "sugar free"]
-
   def self.calculate(order)
     new(order).calculate_redemption
   end
@@ -21,29 +12,37 @@ class RedemptionCalculator
     end
   end
 
-  def calculate_redemption(num_pieces_purchased=(order.cash / order.price), type=order.type)
-    @chocolates[type] += num_pieces_purchased
-    if num_pieces_purchased > order.wrappers_needed
-      num_redeemed = num_pieces_purchased / order.wrappers_needed
-      apply_redemption(type, num_redeemed)
-      num_pieces_purchased = @chocolates[order.type] - order.wrappers_needed
-      if (num_pieces_purchased / order.wrappers_needed) > 0
-        apply_redemption(type, num_pieces_purchased / order.wrappers_needed)
-      end
-        REDEEMABLE_MAP[type].each do |related_type|
-        if related_type != order.type && @chocolates[related_type] >= order.wrappers_needed
-          apply_redemption(related_type, @chocolates[related_type] / order.wrappers_needed)
-        end
-      end
-    end
+  def calculate_redemption
+    total = order.cash / order.price
+    @chocolates[order.type] += total
+    calculate(order.type)
+    calculate_redemption_for_related_type
     @chocolates
   end
 
   def apply_redemption(type, num_redeemed)
-    num_redeemed.times do
-      REDEEMABLE_MAP[type].each do |related_type|
-        @chocolates[related_type] += 1
+    REDEEMABLE_MAP[type].each do |related_type|
+      @chocolates[related_type] += num_redeemed
+    end
+  end
+
+  def calculate_redemption_for_related_type(type=order.type)
+    REDEEMABLE_MAP[type].each do |related_type|
+      if (related_type != type) && @chocolates[related_type] >= order.wrappers_needed
+        calculate(related_type)
+        calculate_redemption_for_related_type(related_type)
       end
+    end
+  end
+
+  def calculate(type)
+    free     = @chocolates[type] / order.wrappers_needed
+    leftover = (@chocolates[type] % order.wrappers_needed) + free
+    apply_redemption(type, free)
+    while leftover >= order.wrappers_needed
+      free     = leftover / order.wrappers_needed
+      leftover = (@chocolates[type] % order.wrappers_needed) + free
+      apply_redemption(type, free)
     end
   end
 end

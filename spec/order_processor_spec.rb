@@ -47,9 +47,19 @@ describe OrderProcessor do
     end
     context "failure" do
       context "given a file that does not exist" do
-        let(:processor) {OrderProcessor.process("not_a_real_file.csv")}
+        let(:processor) { OrderProcessor.process("not_a_real_file.csv") }
         it "sets the correct error" do
           expect(processor.errors).to eq({file_not_found: "File not_a_real_file.csv not found"})
+        end
+        it "is not successfull" do
+          expect(processor.success).to_not eq(true)
+        end
+      end
+
+      context "order is not valid" do
+        let(:processor) { OrderProcessor.process(INPUT_DIR + "errored_input.csv") }
+        it "sets the correct error" do
+          expect(processor.errors["order_number_1"][:cash]).to eq(["you do not have enough money"])
         end
         it "is not successfull" do
           expect(processor.success).to_not eq(true)

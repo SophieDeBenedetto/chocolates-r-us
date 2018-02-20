@@ -1,5 +1,5 @@
-class Cli 
-  
+class Cli
+
   def self.run
     welcome
     interact
@@ -54,14 +54,23 @@ class Cli
     processor = orders_csv ? OrderProcessor.process(orders_csv) : OrderProcessor.process
     if processor.success
       puts "Done!".green
+      `open #{OUTPUT_DIR}/#{processor.output_filename}`
     else
-      processor.errors.each do |type, message| 
-        puts "#{type}: #{message}".red
-      end
+      puts "We found the following errors:".red
+      display_errors(processor.errors)
     end
   end
 
-  def file_not_found
-    puts "File #{orders_csv} not found"
+  def self.display_errors(errors)
+    errors.each do |type, message|
+      if message.is_a?(Hash)
+        puts "#{type}:".red
+        display_errors(message)
+      elsif message.is_a?(Array) && message.length > 0
+        puts "  #{type}: #{message}".red
+      elsif message.is_a?(String)
+        puts "  #{type}: #{message}".red
+      end
+    end
   end
 end
